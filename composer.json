@@ -1,0 +1,29 @@
+{
+    "name": "ysm/with-transaction",
+    "description": "Laravel trait to automatically wrap model operations in transactions.",
+    "type": "library",
+    "keywords": [
+        "laravel",
+        "transaction",
+        "model",
+        "trait",
+        "orm"
+    ],
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "YSM\\WithTransaction\\": "src/"
+        }
+    },
+    "require": {
+        "php": "^8.1",
+        "illuminate/support": "^10.0|^11.0"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "YSM\\WithTransaction\\WithTransactionServiceProvider"
+            ]
+        }
+    }
+}
