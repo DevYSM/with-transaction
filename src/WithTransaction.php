@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Traits;
+namespace YSM\WithTransaction;
 
 use Closure;
 use Illuminate\Support\Facades\DB;
