@@ -17,7 +17,7 @@ without writing `DB::transaction()` everywhere.
 ## 📦 Installation
 
 ```bash
-composer require your-vendor/with-transaction
+composer require ysm/with-transaction
 
 php artisan vendor:publish --tag=with-transaction-config
 ```
