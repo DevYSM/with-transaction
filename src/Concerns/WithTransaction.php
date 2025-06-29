@@ -1,6 +1,6 @@
 <?php
 
-namespace YSM\Concerns\WithTransaction;
+namespace YSM\WithTransaction\Concerns;
 
 use Closure;
 use Illuminate\Support\Facades\DB;
@@ -74,7 +74,25 @@ trait WithTransaction
             return parent::save($options);
         }
 
-        return DB::transaction(fn () => parent::save($options));
+        return DB::transaction(fn() => parent::save($options));
+    }
+
+    /**
+     * Create a new model instance and pass it to the callback,
+     * running the callback inside a transaction if enabled.
+     *
+     * @param Closure(static): mixed $callback
+     *
+     * @return mixed
+     * @throws Throwable
+     */
+    public static function transaction(Closure $callback): mixed
+    {
+        if (!static::shouldWrapStatic()) {
+            return $callback(new static());
+        }
+
+        return DB::transaction(fn() => $callback(new static()));
     }
 
     /**
@@ -95,24 +113,6 @@ trait WithTransaction
     }
 
     /**
-     * Create a new model instance and pass it to the callback,
-     * running the callback inside a transaction if enabled.
-     *
-     * @param Closure(static): mixed $callback
-     *
-     * @return mixed
-     * @throws Throwable
-     */
-    public static function transactional(Closure $callback): mixed
-    {
-        if (!static::shouldWrapStatic()) {
-            return $callback(new static());
-        }
-
-        return DB::transaction(fn () => $callback(new static()));
-    }
-
-    /**
      * Update the model within a transaction if enabled.
      *
      * @param array $attributes
@@ -127,7 +127,7 @@ trait WithTransaction
             return tap($this)->fill($attributes)->save($options);
         }
 
-        return DB::transaction(fn () => tap($this)->fill($attributes)->save($options));
+        return DB::transaction(fn() => tap($this)->fill($attributes)->save($options));
     }
 
     /**
@@ -142,7 +142,7 @@ trait WithTransaction
             return parent::delete();
         }
 
-        return DB::transaction(fn () => parent::delete());
+        return DB::transaction(fn() => parent::delete());
     }
 
     /**
@@ -157,7 +157,7 @@ trait WithTransaction
             return parent::forceDelete();
         }
 
-        return DB::transaction(fn () => parent::forceDelete());
+        return DB::transaction(fn() => parent::forceDelete());
     }
 
     /**
@@ -172,7 +172,7 @@ trait WithTransaction
             return parent::restore();
         }
 
-        return DB::transaction(fn () => parent::restore());
+        return DB::transaction(fn() => parent::restore());
     }
 
     /**
@@ -209,7 +209,7 @@ trait WithTransaction
 
         try {
             return $this->shouldWrap()
-                ? DB::transaction(fn () => $callback($this))
+                ? DB::transaction(fn() => $callback($this))
                 : $callback($this);
         } finally {
             $this->wrapInTransaction = $original;

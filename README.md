@@ -7,10 +7,10 @@ without writing `DB::transaction()` everywhere.
 ## ✨ Features
 
 - Automatically wraps model actions in a transaction
-- Easily toggle transactional behavior per operation
+- Easily toggle transaction behavior per operation
 - Works with all Eloquent models
 - Supports create, update, save, delete, restore, forceDelete
-- Static helpers: `withTransaction`, `transactional`
+- Static helpers: `withTransaction`, `transaction`
 
 ---
 
@@ -53,7 +53,7 @@ class PostController extends Controller
 {
     public function store(Request $request)
     {
-       $post = Post::transactional(function () use ($request) {
+       $post = Post::transaction(function () use ($request) {
 
             $model = Post::create($request->validated());
 
@@ -90,7 +90,7 @@ class PostController extends Controller
 {
     public function Update(Request $request, Post $post)
     {
-        $post = Post::transactional(function () use ($post) {
+        $post = Post::transaction(function () use ($post) {
 
             $post->update([
                 'title' => 'Update title Post v1',
@@ -122,7 +122,7 @@ class PostController extends Controller
 {
     public function destroy(Post $post)
     {
-        $post = Post::transactional(function () use ($post) {
+        $post = Post::transaction(function () use ($post) {
             $post->delete();
             // If you want to perform any additional operations after deletion,
             // you can do so here. For example, logging or cleaning up related data.
@@ -145,14 +145,14 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Post;
 use Illuminate\Http\Request;
-use YSM\Support\transactional;
+use YSM\Support\transaction;
 
 class PostController extends Controller
 {
     public function destroy(Post $post)
     {
 
-        $post = transactional(function () use ($post) {
+        $post = transaction(function () use ($post) {
             $post->delete();
             // If you want to perform any additional operations after deletion,
             // you can do so here. For example, logging or cleaning up related data.
@@ -168,6 +168,34 @@ class PostController extends Controller
 }
 ```
 
-### Thanks for using this package! ❤️
+### 🔁 Using the Global Helper Function
 
-If you have any questions or suggestions, feel free to open an issue on GitHub.
+Use anywhere in your app:
+
+```php
+use function YSM\Support\transaction;
+
+transaction(function () use ($post) {
+    $post->update([...]);
+}, attempts: 2, onSuccess: fn () => Log::info('Done!'), onFailure: fn ($e) => report($e));
+```
+
+### 🧠 Fluent Transaction Builder
+
+Need more control? Use the fluent interface:
+
+```php
+use YSM\Support\Facades\Transaction;
+
+Transaction::start()
+    ->attempts(3)
+    ->onSuccess(fn ($result) => Log::info('Transaction success', ['id' => $result?->id]))
+    ->onFailure(fn ($e) => Log::error('Transaction failed', ['message' => $e->getMessage()]))
+    ->run(fn () => Post::create([...]));
+```
+
+### ❤️ Thank You
+
+Thanks for using this package!
+If it saved you time or avoided a bug, consider giving it a ⭐ on GitHub.
+ 
