@@ -3,6 +3,7 @@
 namespace YSM\WithTransaction;
 
 use Illuminate\Support\ServiceProvider;
+use YSM\WithTransaction\Builders\TransactionBuilder;
 
 class WithTransactionServiceProvider extends ServiceProvider
 {
@@ -13,6 +14,8 @@ class WithTransactionServiceProvider extends ServiceProvider
 
     public function register(): void
     {
+        $this->app->singleton('with-transaction', fn() => new TransactionBuilder());
+
         //
     }
 }
