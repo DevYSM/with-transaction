@@ -1,6 +1,6 @@
 <?php
 
-namespace YSM\WithTransaction\Support\Facades;
+namespace YSM\WithTransaction\Facades;
 
 use Illuminate\Support\Facades\Facade;
 use YSM\WithTransaction\Builders\TransactionBuilder;
