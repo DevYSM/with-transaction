@@ -46,7 +46,7 @@ Now you can use your model as usual, and all operations will be automatically wr
 ```php
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller; 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
 class PostController extends Controller
@@ -54,15 +54,15 @@ class PostController extends Controller
     public function store(Request $request)
     {
        $post = Post::transactional(function () use ($request) {
-       
+
             $model = Post::create($request->validated());
-            
+
             $model->tags()->attach(Tag::inRandomOrder()->take(3)->pluck('id'));
             $model->categories()->attach(Category::inRandomOrder()->take(3)->pluck('id'));
-            
+
             $model->addMediaFromRequest('image')
                 ->toMediaCollection('posts');
-            
+
             // all or nothing rollback automatically
             return $model;
         });
@@ -82,7 +82,7 @@ You can also use the same trait for updating models:
 ```php
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller; 
+use App\Http\Controllers\Controller;
 use App\Models\Post;
 use Illuminate\Http\Request;
 
@@ -91,7 +91,7 @@ class PostController extends Controller
     public function Update(Request $request, Post $post)
     {
         $post = Post::transactional(function () use ($post) {
-        
+
             $post->update([
                 'title' => 'Update title Post v1',
             ]);
@@ -114,7 +114,7 @@ class PostController extends Controller
 You can also delete models using the same trait:
 
 ```php
-namespace App\Http\Controllers\Api; 
+namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Post;
 use Illuminate\Http\Request;
@@ -138,7 +138,36 @@ class PostController extends Controller
 }
 ```
 
+### Or you can use it as a helper function
+
+```php
+namespace App\Http\Controllers\Api;
+use App\Http\Controllers\Controller;
+use App\Models\Post;
+use Illuminate\Http\Request;
+use YSM\Support\transactional;
+
+class PostController extends Controller
+{
+    public function destroy(Post $post)
+    {
+
+        $post = transactional(function () use ($post) {
+            $post->delete();
+            // If you want to perform any additional operations after deletion,
+            // you can do so here. For example, logging or cleaning up related data.
+            // If the deletion fails, the transaction will automatically roll back.
+            return $post;
+        });
+
+        return response()->json([
+            'message' => 'Post deleted successfully',
+            'post' => $post,
+        ], 200);
+    }
+}
+```
+
 ### Thanks for using this package! ❤️
 
 If you have any questions or suggestions, feel free to open an issue on GitHub.
- 

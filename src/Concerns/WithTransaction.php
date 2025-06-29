@@ -1,6 +1,6 @@
 <?php
 
-namespace YSM\WithTransaction;
+namespace YSM\Concerns\WithTransaction;
 
 use Closure;
 use Illuminate\Support\Facades\DB;
@@ -47,7 +47,7 @@ trait WithTransaction
      */
     protected static function shouldWrapStatic(): bool
     {
-        return (new static)->shouldWrap();
+        return (new static())->shouldWrap();
     }
 
     /**
@@ -74,7 +74,7 @@ trait WithTransaction
             return parent::save($options);
         }
 
-        return DB::transaction(fn() => parent::save($options));
+        return DB::transaction(fn () => parent::save($options));
     }
 
     /**
@@ -109,7 +109,7 @@ trait WithTransaction
             return $callback(new static());
         }
 
-        return DB::transaction(fn() => $callback(new static()));
+        return DB::transaction(fn () => $callback(new static()));
     }
 
     /**
@@ -127,7 +127,7 @@ trait WithTransaction
             return tap($this)->fill($attributes)->save($options);
         }
 
-        return DB::transaction(fn() => tap($this)->fill($attributes)->save($options));
+        return DB::transaction(fn () => tap($this)->fill($attributes)->save($options));
     }
 
     /**
@@ -142,7 +142,7 @@ trait WithTransaction
             return parent::delete();
         }
 
-        return DB::transaction(fn() => parent::delete());
+        return DB::transaction(fn () => parent::delete());
     }
 
     /**
@@ -157,7 +157,7 @@ trait WithTransaction
             return parent::forceDelete();
         }
 
-        return DB::transaction(fn() => parent::forceDelete());
+        return DB::transaction(fn () => parent::forceDelete());
     }
 
     /**
@@ -172,7 +172,7 @@ trait WithTransaction
             return parent::restore();
         }
 
-        return DB::transaction(fn() => parent::restore());
+        return DB::transaction(fn () => parent::restore());
     }
 
     /**
@@ -209,7 +209,7 @@ trait WithTransaction
 
         try {
             return $this->shouldWrap()
-                ? DB::transaction(fn() => $callback($this))
+                ? DB::transaction(fn () => $callback($this))
                 : $callback($this);
         } finally {
             $this->wrapInTransaction = $original;
